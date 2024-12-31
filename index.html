@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Tab Management System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Browser Tab Management System</h1>
+    <div class="tab-controls">
+      <input type="text" id="tab-name" placeholder="Enter Tab Name">
+      <button onclick="openTab()">Open Tab</button>
+      <button onclick="closeTab()">Close Tab</button>
+      <button onclick="goBack()">Back</button>
+      <button onclick="goForward()">Forward</button>
+    </div>
+    <div class="tab-display">
+      <h2>Current Tabs</h2>
+      <ul id="tab-list"></ul>
+    </div>
+    <div class="history">
+      <h2>Current Page: <span id="current-page">None</span></h2>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #333;
+}
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-out;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #343a40;
+}
+
+.tab-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-controls input {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  background: #f8f9fa;
+  color: #495057;
+  transition: all 0.3s ease;
+}
+
+.tab-controls input:focus {
+  border-color: #0d6efd;
+  outline: none;
+  background: #ffffff;
+}
+
+.tab-controls button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  background: #0d6efd;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.3s ease, background 0.3s;
+}
+
+.tab-controls button:hover {
+  background: #0a58ca;
+  transform: scale(1.05);
+}
+
+.tab-controls button:active {
+  transform: scale(0.95);
+}
+
+.tab-display, .history {
+  margin-top: 20px;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 10px;
+  margin-bottom: 8px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  color: #495057;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideIn 0.5s ease forwards;
+}
+
+li:nth-child(odd) {
+  background: #e9ecef;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#current-page {
+  color: #0d6efd;
+  font-weight: bold;
+  animation: fadeIn 0.8s ease-out;
+}
+</style>
+
+<script>
+const tabs = [];
+const backStack = [];
+const forwardStack = [];
+
+function updateUI() {
+  const tabList = document.getElementById("tab-list");
+  const currentPage = document.getElementById("current-page");
+
+  tabList.innerHTML = "";
+  tabs.forEach((tab, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${tab}`;
+    li.style.animationDelay = `${index * 0.1}s`; // Stagger animation for each tab
+    tabList.appendChild(li);
+  });
+
+  currentPage.textContent = tabs.length > 0 ? tabs[tabs.length - 1] : "None";
+}
+
+function openTab() {
+  const tabName = document.getElementById("tab-name").value.trim();
+  if (!tabName) {
+    alert("Enter a valid tab name.");
+    return;
+  }
+
+  if (tabs.length > 0) {
+    backStack.push(tabs[tabs.length - 1]);
+  }
+
+  tabs.push(tabName);
+
+  forwardStack.length = 0;
+
+  document.getElementById("tab-name").value = "";
+  updateUI();
+}
+
+function closeTab() {
+  if (tabs.length === 0) {
+    alert("No tabs to close.");
+    return;
+  }
+
+  tabs.pop();
+  updateUI();
+}
+
+function goBack() {
+  if (backStack.length === 0) {
+    alert("No history to go back.");
+    return;
+  }
+
+  if (tabs.length > 0) {
+    forwardStack.push(tabs.pop());
+  }
+
+  tabs.push(backStack.pop());
+  updateUI();
+}
+
+function goForward() {
+  if (forwardStack.length === 0) {
+    alert("No forward history.");
+    return;
+  }
+
+  if (tabs.length > 0) {
+    backStack.push(tabs.pop());
+  }
+
+  tabs.push(forwardStack.pop());
+  updateUI();
+}
+
+updateUI();
+</script>
