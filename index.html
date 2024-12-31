@@ -11,10 +11,10 @@
     <h1>Browser Tab Management System</h1>
     <div class="tab-controls">
       <input type="text" id="tab-name" placeholder="Enter Tab Name">
-      <button onclick="openTab()">Open Tab</button>
-      <button onclick="closeTab()">Close Tab</button>
-      <button onclick="goBack()">Back</button>
-      <button onclick="goForward()">Forward</button>
+      <button onclick="openTab()">Push</button>
+      <button onclick="closeTab()">Pop</button>
+      <!-- <button onclick="goBack()">Back</button>
+      <button onclick="goForward()">Forward</button> -->
     </div>
     <div class="tab-display">
       <h2>Current Tabs</h2>
@@ -31,7 +31,7 @@
 <style>
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+  background: linear-gradient(to bottom right, #e0eafc, #cfdef3);
   margin: 0;
   padding: 0;
   display: flex;
@@ -168,10 +168,11 @@ function updateUI() {
   const currentPage = document.getElementById("current-page");
 
   tabList.innerHTML = "";
-  tabs.forEach((tab, index) => {
+
+  [...tabs].reverse().forEach((tab, index) => {
     const li = document.createElement("li");
-    li.textContent = `${index + 1}. ${tab}`;
-    li.style.animationDelay = `${index * 0.1}s`; // Stagger animation for each tab
+    li.textContent = `${tabs.length - index}. ${tab}`;
+    li.style.animationDelay = `${index * 0.1}s`; 
     tabList.appendChild(li);
   });
 
@@ -190,9 +191,7 @@ function openTab() {
   }
 
   tabs.push(tabName);
-
-  forwardStack.length = 0;
-
+  forwardStack.length = 0; 
   document.getElementById("tab-name").value = "";
   updateUI();
 }
